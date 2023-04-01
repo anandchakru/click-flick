@@ -1,6 +1,4 @@
 import React, { useEffect } from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
 import './App.css';
 import { AppCredential, authInitAsync, authStateChange, AUTH_CREDENTIAL, fireauth, selectAuthCredential, selectAuthInitStatus, selectAuthUser, setAuthCredentials } from './features/auth/AuthSlice';
 import { useAppDispatch, useAppSelector } from './app/hooks';

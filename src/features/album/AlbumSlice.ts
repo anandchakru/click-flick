@@ -57,14 +57,6 @@ export interface GhPageImageInfo {
   img: ImgInfo[]
   repoInfo: CreateRepoInfo
 }
-interface CreateGalleryResponse {
-  galleryGhInfo?: any,
-  pullReqGhInfo?: any,
-  mergeGhInfo?: any,
-  ghPagesGhInfo?: any,
-  error?: any,
-  data: []
-}
 
 export interface CreateAlbumResponse {
   albumGhInfo?: any,
@@ -73,15 +65,6 @@ export interface CreateAlbumResponse {
   updateGalleryGhInfo?: any,
   ghPagesGhInfo?: any,
   error?: any,
-}
-interface AddImagesToAlbumResponse {
-  pullReqGhInfo?: any,
-  mergeGhInfo?: any,
-  error?: any,
-}
-
-interface UpdateGalleryResponse {
-  galleryGhInfo?: any,
 }
 
 export interface AlbumState {
@@ -110,6 +93,7 @@ export const fetchAlbumAsync = createAsyncThunk(
     const state = getState() as RootState
     if (state.auth.isAuthenticated) {
       const { accessToken } = state.auth.credential as AppCredential
+      console.log(`accessToken ${accessToken} name ${name} owner ${owner}`)
       //const octokit = new AppOctokit({ auth: accessToken })
       //const repo = await octokit.request(`GET /repos/${owner}/${name}`)
       //const result = await octokit.request(`GET /repos/${owner}/${name}/contents/public/img`)
@@ -124,6 +108,7 @@ export const addImagesToAlbumAsync = createAsyncThunk(
     if (state.auth.isAuthenticated) {
       const { accessToken, ghuser } = state.auth.credential as AppCredential
       if (accessToken) {
+        console.log(`accessToken ${accessToken}, ghuser ${ghuser}`)
         //return await addImagesToAlbum(ghuser, accessToken, repoName, albumName, images, owner)
         return {}
       }

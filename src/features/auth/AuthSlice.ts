@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { GoogleAuthProvider, OAuthCredential, signOut } from 'firebase/auth'
+import { GoogleAuthProvider, signOut } from 'firebase/auth'
 // import { OAuthCredential } from 'firebase/auth'
 import { RootState } from '../../app/store'
 

@@ -31,6 +31,7 @@ export const fetchGalleryAsync = createAsyncThunk(
     const state = getState() as RootState
     if (state.auth.credential) {
       const { accessToken, uid } = state.auth.credential as AppCredential
+      console.log(`accessToken ${accessToken}`)
       if (!state.gallery.gallery) {
         return {
           data: [{
