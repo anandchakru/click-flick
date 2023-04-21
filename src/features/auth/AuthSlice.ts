@@ -40,7 +40,7 @@ const initialState: AuthState = {
 }
 
 // Initialize Firebase
-export const fireapp = initializeApp({
+/*export const fireapp = initializeApp({
   apiKey: "AIzaSyBMX2xdKosS7vtXIbRUTtZMLY9WczVNImE",
   authDomain: "clickflick-3d09b.firebaseapp.com",
   projectId: "clickflick-3d09b",
@@ -48,6 +48,15 @@ export const fireapp = initializeApp({
   messagingSenderId: "115493937874",
   appId: "1:115493937874:web:d1c88766fbc3f4c126830b",
   measurementId: "G-VJTVY7C66N"
+})*/
+export const fireapp = initializeApp({
+  apiKey: "AIzaSyBSVDcId1QER81jhWp8SCFuiHLIpJdZUyQ",
+  authDomain: "rathnas-auth.firebaseapp.com",
+  projectId: "rathnas-auth",
+  storageBucket: "rathnas-auth.appspot.com",
+  messagingSenderId: "333908191690",
+  appId: "1:333908191690:web:f6e40eaa486f7194ee0733",
+  measurementId: "G-2GXCTW1N4S"
 })
 export const analytics = getAnalytics(fireapp)
 export const fireauth = getAuth(fireapp)
@@ -69,10 +78,11 @@ export const signInAsync = createAsyncThunk(
     if (!state.auth.isAuthenticated) {
       provider.setCustomParameters({ redirectTo })
       const result = await signInWithPopup(fireauth, provider)
-      const credential = GithubAuthProvider.credentialFromResult(result)
+      const credential = GoogleAuthProvider.credentialFromResult(result)
       return {
         user: {
           uid: result.user.uid,
+          ghuser: result.user.uid,
           displayName: result.user.displayName,
           email: result.user.email,
           photoURL: result.user.photoURL,
@@ -82,6 +92,7 @@ export const signInAsync = createAsyncThunk(
         ...credential && {
           credential: {
             uid: result.user.uid,
+            ghuser: result.user.uid,
             providerId: credential.providerId,
             signinMethod: credential.signInMethod,
             idToken: credential.idToken,

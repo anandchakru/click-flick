@@ -66,7 +66,6 @@ function NewAlbum() {
         {images && Object.keys(images).length > 0 && <Button sx={{}} variant="contained" color="primary" onClick={async () => {
           await dispatch(createAlbumAsync({ repoName: genRepoName(), albumName, images }))
           setImages({})
-          alert('Album created, it will take about a minute to see changes.')
           navigate('/gallery')
         }} disabled={!albumName || albumName.length === 0}>Upload</Button>}
       </Box>

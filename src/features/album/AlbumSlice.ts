@@ -1,6 +1,8 @@
 import { RootState } from '../../app/store'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { AppCredential } from '../auth/AuthSlice'
+import { AppCredential, fireauth } from '../auth/AuthSlice'
+import axios from 'axios'
+import { API_BASE } from '../../app/constants'
 
 export const waitFor = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 export interface AppImageBlob {
@@ -80,10 +82,23 @@ const initialState: AlbumState = {
 export const createAlbumAsync = createAsyncThunk(
   'album/create', async ({ repoName, albumName, images }: { repoName: string, albumName: string, images: { [x: number]: AppImageBlob } }, { getState }) => {
     const state = getState() as RootState
-    const { accessToken, ghuser } = state.auth.credential as AppCredential
+    const { idToken, accessToken, ghuser } = state.auth.credential as AppCredential
     if (state.auth.isAuthenticated && accessToken && ghuser) {
-      //return createAlbumWithImages(ghuser, accessToken, repoName, albumName, images)
-      return {}
+      var base64Url = idToken?.split('.')[1]
+      var base64 = base64Url?.replace(/-/g, '+').replace(/_/g, '/')
+      var jsonPayload = decodeURIComponent(atob(base64 ? base64 : '').split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      }).join(''))
+
+      return axios.post(`${API_BASE}apps/album`, {
+        title: albumName,
+        byInviteOnly: true
+      }, {
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          "Authorization": `Bearer ${await fireauth.currentUser?.getIdToken()}`
+        }
+      })
     }
   }
 )

@@ -1,7 +1,8 @@
 {
   "name": "click-flick",
   "version": "0.1.0",
-  "homepage": "https://anandchakru.github.io/click-flick",
+  "homepage": "https://cf.rathnas.com",
+  "homepage2": "https://anandchakru.github.io/click-flick",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.6",
@@ -31,7 +32,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "node ./config/version.js && react-scripts build && aws s3 sync ./build s3://cf.rathnas.com/"
   },
   "eslintConfig": {
     "extends": [
