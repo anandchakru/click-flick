@@ -60,6 +60,22 @@ export interface GhPageImageInfo {
   repoInfo: CreateRepoInfo
 }
 
+export interface AlbumInfo {
+  albumCover: string
+  albumId: number
+  byInviteOnly: boolean
+  slug: string
+  dynamicLink: string
+  photoCount: number
+  shortMsg: string
+  title: string
+  viewCount: number
+}
+export interface AlbumWithPhotos {
+  album: AlbumInfo
+  photos: string[]
+}
+
 export interface CreateAlbumResponse {
   albumGhInfo?: any,
   pullReqGhInfo?: any,
@@ -72,7 +88,7 @@ export interface CreateAlbumResponse {
 export interface AlbumState {
   status: 'idle' | 'loading' | 'failed'
   albumRemoteInfo?: CreateAlbumResponse
-  albumGhPageImages?: GhPageImageInfo
+  albumGhPageImages?: AlbumWithPhotos
 }
 
 const initialState: AlbumState = {
@@ -80,7 +96,7 @@ const initialState: AlbumState = {
 }
 
 export const createAlbumAsync = createAsyncThunk(
-  'album/create', async ({ repoName, albumName, images }: { repoName: string, albumName: string, images: { [x: number]: AppImageBlob } }, { getState }) => {
+  'album/create', async ({ repoName, albumName, images }: { repoName: string, albumName: string, images: File[]/*{ [x: number]: AppImageBlob }*/ }, { getState }) => {
     const state = getState() as RootState
     const { idToken, accessToken, ghuser } = state.auth.credential as AppCredential
     if (state.auth.isAuthenticated && accessToken && ghuser) {
@@ -98,6 +114,28 @@ export const createAlbumAsync = createAsyncThunk(
           "Content-Type": "application/json; charset=UTF-8",
           "Authorization": `Bearer ${await fireauth.currentUser?.getIdToken()}`
         }
+      }).then(async response => {
+        console.log(`created album ${JSON.stringify(response.data)}, uploading images ${JSON.stringify(images)}`)
+        const filesForm = new FormData();
+        images.forEach((file) => {
+          filesForm.append("files", file);
+        })
+        return axios.post(`${API_BASE}apps/album/${response.data.slug}/upload`, filesForm
+        /*{
+          images: Object.values(images).map((image) => {
+            return {
+              name: image.name,
+              b64: image.b64,
+              index: image.index,
+              selected: image.selected
+            }
+          })
+        }*/, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              "Authorization": `Bearer ${await fireauth.currentUser?.getIdToken()}`
+            }
+          })
       })
     }
   }
@@ -106,14 +144,20 @@ export const createAlbumAsync = createAsyncThunk(
 export const fetchAlbumAsync = createAsyncThunk(
   'album/fetch', async ({ name, owner }: { name: string, owner: string }, { getState }) => {
     const state = getState() as RootState
-    if (state.auth.isAuthenticated) {
-      const { accessToken } = state.auth.credential as AppCredential
-      console.log(`accessToken ${accessToken} name ${name} owner ${owner}`)
-      //const octokit = new AppOctokit({ auth: accessToken })
-      //const repo = await octokit.request(`GET /repos/${owner}/${name}`)
-      //const result = await octokit.request(`GET /repos/${owner}/${name}/contents/public/img`)
-      return undefined
-    }
+    //if (state.auth.isAuthenticated) {
+    //const { accessToken } = state.auth.credential as AppCredential
+    //console.log(`accessToken ${accessToken} name ${name} owner ${owner}`)
+    //const octokit = new AppOctokit({ auth: accessToken })
+    //const repo = await octokit.request(`GET /repos/${owner}/${name}`)
+    //const result = await octokit.request(`GET /repos/${owner}/${name}/contents/public/img`)
+    //return undefined
+    //}
+    return axios.get(`${API_BASE}apps/album/bys/${name}`, {
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+        "Authorization": `Bearer ${await fireauth.currentUser?.getIdToken()}`
+      }
+    }).then(response => response.data)
   }
 )
 

@@ -48,14 +48,13 @@ const masonryImg = {
 
 type FullscreenImageProp = {
   currentImage: any
-  base: any
   setCurrentImage: any
   next: any
   prev: any
 }
 
-const FullscreenImage = ({ currentImage, base, setCurrentImage, next, prev }: FullscreenImageProp) => <Dialog onClose={() => setCurrentImage(-1)}
-  open={(currentImage && currentImage.path !== undefined) ? true : false} fullScreen
+const FullscreenImage = ({ currentImage, setCurrentImage, next, prev }: FullscreenImageProp) => <Dialog onClose={() => setCurrentImage(-1)}
+  open={(currentImage) ? true : false} fullScreen
   sx={{ userSelect: 'none', backgroundColor: '#ffffffee', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
   {currentImage && <Card sx={{ userSelect: 'none', }}>
     {prev >= 0 && <Box sx={{
@@ -65,7 +64,7 @@ const FullscreenImage = ({ currentImage, base, setCurrentImage, next, prev }: Fu
     }} onClick={() => { setCurrentImage(prev) }}><ChevronLeftIcon sx={{ userSelect: 'none', }} /></Box>}
     <CardMedia component="img" sx={{ userSelect: 'none', objectFit: 'contain', width: '100%', height: '100vh' }}
       onClick={() => { setCurrentImage(-1) }}
-      image={base + currentImage.path} alt={'__' + currentImage.name} />
+      image={currentImage} alt={'__' + currentImage} />
     {next && <Box sx={{
       ...fsButtonStyles,
       userSelect: 'none',
@@ -111,24 +110,13 @@ function Album() {
           </IconButton> : <IconButton aria-label="Switch to Masonary View" color="inherit" onClick={() => setMasonry(true)}>
             <ViewCompactIcon />
           </IconButton>}
-          <IconButton aria-label="View on Github" color="primary"
-            onClick={() => window.open(albumGhPageImages?.repoInfo.data?.html_url)}>
-            <GitHubIcon />
-          </IconButton>
-          {(owner !== undefined && owner !== ghUser) ? <IconButton aria-label="View Owner on Github" color="primary"
-            onClick={() => window.open(albumGhPageImages?.repoInfo.data?.owner.html_url)}>
-            <Avatar sx={{ width: '24px', height: '24px' }} alt={albumGhPageImages?.repoInfo.data?.owner.html_url} src={albumGhPageImages?.repoInfo.data?.owner.avatar_url} />
-          </IconButton> :
-            <IconButton aria-label="share" disabled={!albumGhPageImages?.repoInfo.data?.homepage} color="primary" onClick={() => window.open(albumGhPageImages?.repoInfo.data?.homepage)}>
-              <ShareIcon />
-            </IconButton>}
           {images && albumId && Object.keys(images).length > 0 ?
             <IconButton aria-label="View on Github" color="primary" onClick={async () => {
               if (!compressing && status !== 'loading') {
                 const ownerOrFork = owner ? owner : ghUser
                 ownerOrFork && await dispatch(addImagesToAlbumAsync({
                   repoName: albumId, images,
-                  albumName: albumGhPageImages?.repoInfo.data?.description || albumId,
+                  albumName: albumGhPageImages?.album?.title || albumId,
                   owner: ownerOrFork,
                 }))
                 setImages({})
@@ -146,7 +134,7 @@ function Album() {
 
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h5" component="div">
-              {albumGhPageImages?.repoInfo.data?.description || albumId}
+              {albumGhPageImages?.album?.title || albumId}
             </Typography>
           </Box>
         </Toolbar>
@@ -155,23 +143,23 @@ function Album() {
       {isMasonry ? <Masonry columns={{ xs: 2, sm: 3, md: 4, lg: 5 }} spacing={2}>
         {/* Upload pendingg images */}
         {images && Object.keys(images).map((image, index) => <Box key={index} height="250">
-          <img loading="lazy" style={{ ...masonryImg, opacity: 0.3 }} src={URL.createObjectURL(images[image as any].blob)} alt={images[image as any].name} />
+          {/* <img loading="lazy" style={{ ...masonryImg, opacity: 0.3 }} src={URL.createObjectURL(images[image as any].blob)} alt={images[image as any].name} /> */}
           <Typography variant="caption" display="block" color="text.secondary">
             (upload pending)
           </Typography>
         </Box>)}
         {/* Album images */}
-        {albumGhPageImages?.img && albumGhPageImages?.img.map((image, index) => <Box key={index}
+        {albumGhPageImages?.photos && albumGhPageImages?.photos.map((image, index) => <Box key={index}
           onClick={() => {
             setCurrentImage(index)
           }}>
-          <img loading="lazy" style={{ ...masonryImg }} src={albumGhPageImages?.repoInfo.data.homepage + image.path} alt={image.name} />
+          <img loading="lazy" style={{ ...masonryImg }} src={image} alt={`${index}`} />
         </Box>)}
       </Masonry> : <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         {/* Upload pendingg images */}
         {images && Object.keys(images).map((image, index) => <Grid key={index} item xs={6} sm={4} md={3} lg={2}><Card sx={{ maxWidth: 250, opacity: 0.5 }}>
           <CardActionArea>
-            <CardMedia component="img" height="250" sx={{ objectFit: 'cover' }} loading="lazy" image={URL.createObjectURL(images[image as any].blob)} alt={images[image as any].name} />
+            {/* <CardMedia component="img" height="250" sx={{ objectFit: 'cover' }} loading="lazy" image={URL.createObjectURL(images[image as any].blob)} alt={images[image as any].name} /> */}
             <CardContent>
               <Typography variant="body2">
                 {images[image as any].name}
@@ -184,18 +172,18 @@ function Album() {
         </Card>
         </Grid>)}
         {/* Album images */}
-        {albumGhPageImages?.img && albumGhPageImages?.img.map((image, index) => <Grid key={index} item xs={6} sm={4} md={3} lg={2}><Card sx={{ maxWidth: 250, }}>
+        {albumGhPageImages?.photos && albumGhPageImages?.photos.map((image, index) => <Grid key={index} item xs={6} sm={4} md={3} lg={2}><Card sx={{ maxWidth: 250, }}>
           <CardActionArea>
-            <CardMedia component="img" height="250" sx={{ objectFit: 'cover' }} loading="lazy" image={albumGhPageImages?.repoInfo.data.homepage + image.path} alt={image.name}
+            <CardMedia component="img" height="250" sx={{ objectFit: 'cover' }} loading="lazy" image={image} alt={`${image}`}
               onClick={() => {
                 setCurrentImage(index)
               }} />
             <CardContent>
               <Typography variant="body2">
-                {image.name}
+                {index}
               </Typography>
-              <Typography variant="caption" display="block" color="text.secondary">
-                {Math.floor(image.size / 1000)} KB
+              <Typography variant="caption" display="none" color="text.secondary">
+                {Math.floor(index / 1000)} KB
               </Typography>
             </CardContent>
           </CardActionArea>
@@ -223,11 +211,11 @@ function Album() {
           {(compressing || status === 'loading') && <CircularProgress />}
         </Backdrop>
       </Box>
-      <FullscreenImage base={albumGhPageImages?.repoInfo.data.homepage}
-        currentImage={albumGhPageImages?.img[currentImage]}
+      {albumGhPageImages?.photos?.length && <FullscreenImage
+        currentImage={albumGhPageImages?.photos[currentImage]}
         prev={currentImage >= 0 ? currentImage - 1 : undefined}
-        next={albumGhPageImages && currentImage < albumGhPageImages.img.length - 1 ? currentImage + 1 : undefined}
-        setCurrentImage={setCurrentImage} />
+        next={albumGhPageImages && currentImage < albumGhPageImages?.photos?.length - 1 ? currentImage + 1 : undefined}
+        setCurrentImage={setCurrentImage} />}
     </div>
   )
 }

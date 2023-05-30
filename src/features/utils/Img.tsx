@@ -6,7 +6,7 @@ type ImgProp = {
   alt: string
 }
 
-const Img = (props: ImgProp) => {
+const Img2 = (props: ImgProp) => {
   const [sSrc, setSsrc] = useState('')
   useEffect(() => {
     const fetchData = async (src: string) => await axios.get(src, { responseType: 'blob' }).then((res: AxiosResponse) => URL.createObjectURL(res.data))
@@ -19,4 +19,4 @@ const Img = (props: ImgProp) => {
   )
 }
 
-export default Img
+export default Img2

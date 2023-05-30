@@ -6,7 +6,7 @@ const PreviewPickedImgsForUpload = (props: any) => {
   return (<Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
     {Object.keys(files).map((file: any, index: number) => <Grid key={index} item xs={6} sm={4} md={3} lg={2}><Card sx={{ maxWidth: 100, }}>
       <CardActionArea>
-        <CardMedia component="img" height="100" sx={{ objectFit: 'cover' }} image={URL.createObjectURL(files[file].blob)} alt={files[file].name} />
+        {/* <CardMedia component="img" height="100" sx={{ objectFit: 'cover' }} image={URL.createObjectURL(files[file].blob)} alt={files[file].name} /> */}
         <CardContent>
           <Typography variant="h5" component="span" sx={{ fontSize: `0.5rem` }}>
             {files[file as number].name}

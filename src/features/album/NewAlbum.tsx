@@ -25,7 +25,8 @@ function NewAlbum() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const album = useAppSelector(selectAlbum)
-  const [images, setImages] = useState<{ [x: number]: AppImageBlob }>({})
+  //const [images, setImages] = useState<{ [x: number]: AppImageBlob }>({})
+  const [images, setImages] = useState<File[]>([])
   const [compressing, setCompressing] = useState<boolean>(false)
   const [albumName, setAlbumName] = useState<string>(album?.albumGhInfo?.data?.name ? album?.albumGhInfo?.data?.name : genNewAlbumName())
 
@@ -54,7 +55,8 @@ function NewAlbum() {
             if (elem && elem.files) {
               const files = Array.from(elem.files)
               setCompressing(true)
-              setImages(await compress(files))
+              //setImages(await compress(files))
+              setImages(files)
               setCompressing(false)
             }
           }} />
@@ -65,7 +67,8 @@ function NewAlbum() {
         </label>
         {images && Object.keys(images).length > 0 && <Button sx={{}} variant="contained" color="primary" onClick={async () => {
           await dispatch(createAlbumAsync({ repoName: genRepoName(), albumName, images }))
-          setImages({})
+          //setImages({})
+          setImages([])
           navigate('/gallery')
         }} disabled={!albumName || albumName.length === 0}>Upload</Button>}
       </Box>

@@ -1,5 +1,5 @@
 import { AppBar, Box, Card, CardActionArea, CardContent, CardMedia, Grid, IconButton, Toolbar, Typography } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { fetchGalleryAsync, selectGalleryMeta } from './GallerySlice'
@@ -9,6 +9,9 @@ function Gallery() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const galleryMeta = useAppSelector(selectGalleryMeta)
+  useEffect(() => {
+    dispatch(fetchGalleryAsync(''))
+  }, [])
   return (
     <>
       <AppBar position='relative' color="default" sx={{ marginBottom: '24px' }}>
@@ -25,16 +28,17 @@ function Gallery() {
         </Toolbar>
       </AppBar>
       <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        {galleryMeta?.map((image, index) => <Grid key={index} item xs={6} sm={4} md={3} lg={2}>
+        {galleryMeta?.content?.map((galleryMetaItem, index) => <Grid key={index} item xs={6} sm={4} md={3} lg={2}>
           <Card sx={{ maxWidth: 250, }}>
-            <CardActionArea onClick={() => navigate(image?.uri)}>
-              <CardMedia component="img" height="250" sx={{ objectFit: 'cover' }} image={image.cover} alt={image.name} />
+            <CardActionArea onClick={() => navigate(`/album/${galleryMetaItem?.slug}`)}>
+              <CardMedia component="img" height="250" sx={{ objectFit: 'cover' }}
+                image={galleryMetaItem.albumCover ? galleryMetaItem.albumCover : `https://picsum.photos/300?grayscale&blur=1`} alt={galleryMetaItem.title} />
               <CardContent>
                 <Typography variant="body2">
-                  {image.name}
+                  {galleryMetaItem.title}
                 </Typography>
                 <Typography variant="caption" display="block" color="text.secondary">
-                  {image.count} items
+                  {0} items
                 </Typography>
               </CardContent>
             </CardActionArea>

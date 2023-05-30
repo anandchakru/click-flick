@@ -1,6 +1,8 @@
 import { RootState } from '../../app/store'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { AppCredential } from '../auth/AuthSlice'
+import { AppCredential, fireauth } from '../auth/AuthSlice'
+import axios from 'axios'
+import { API_BASE } from '../../app/constants'
 
 export interface GalleryRepoInfo {
   data?: any
@@ -10,16 +12,33 @@ export interface GalleryInfo { // https://docs.github.com/en/rest/reference/repo
   galleryInfo?: GalleryRepoInfo
 }
 
+export interface Page {
+  offset: number
+  pageNumber: number
+  pageSize: number
+  paged: boolean
+}
+
 export interface GalleryMeta {
-  cover: string
-  name: string
-  count: number
-  uri: string
+  first: boolean
+  last: boolean
+  numberOfElements: number
+  size: number
+  totalElements: number
+  totalPages: number
+  pageable: Page
+  content: GalleryContent[]
+}
+export interface GalleryContent {
+  title: string
+  slug: string
+  albumId: number
+  albumCover: string
 }
 export interface GalleryState {
   status: 'idle' | 'loading' | 'failed'
   gallery?: GalleryInfo
-  meta?: GalleryMeta[]
+  meta?: GalleryMeta
 }
 
 const initialState: GalleryState = {
@@ -29,20 +48,12 @@ const initialState: GalleryState = {
 export const fetchGalleryAsync = createAsyncThunk(
   'gallery/fetch', async (nw: string, { getState }) => {
     const state = getState() as RootState
-    if (state.auth.credential) {
-      const { accessToken, uid } = state.auth.credential as AppCredential
-      console.log(`accessToken ${accessToken}`)
-      if (!state.gallery.gallery) {
-        return {
-          data: [{
-            'cover': `TODO: /api/${uid}/gallery/list`,
-            'name': `Gallery name`,
-            'count': 1,
-            'uri': `/api/${uid}/gallery/list`
-          }]
-        }
+    return axios.get(`${API_BASE}apps/album/hosted`, {
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+        "Authorization": `Bearer ${await fireauth.currentUser?.getIdToken()}`
       }
-    }
+    }).then(response => response.data)
   }
 )
 
@@ -56,7 +67,7 @@ export const gallerySlice = createSlice({
         state.status = 'loading'
       }).addCase(fetchGalleryAsync.fulfilled, (state, action) => {
         state.status = 'idle'
-        if (action.payload) state.meta = action.payload.data
+        state.meta = action.payload
       }).addCase(fetchGalleryAsync.rejected, (state) => {
         state.status = 'idle'
       })
