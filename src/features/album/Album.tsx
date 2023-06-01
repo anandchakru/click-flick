@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { addToAlbumAsync, AppImageBlob, fetchAlbumAsync, selectAlbumGhPageImages, selectAlbumStatus } from './AlbumSlice'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { Box, Card, CardActionArea, CardContent, CardMedia, Backdrop, CircularProgress, Grid, IconButton, SxProps, Typography, AppBar, Toolbar, Button } from '@mui/material'
