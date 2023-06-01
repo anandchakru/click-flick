@@ -3,7 +3,7 @@ import { GoogleAuthProvider, signOut } from 'firebase/auth'
 // import { OAuthCredential } from 'firebase/auth'
 import { RootState } from '../../app/store'
 
-import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth"
+import { getAuth, signInWithPopup } from "firebase/auth"
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
 
