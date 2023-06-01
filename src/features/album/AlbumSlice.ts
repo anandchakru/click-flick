@@ -95,17 +95,27 @@ const initialState: AlbumState = {
   status: 'idle',
 }
 
+export const addToAlbumAsync = createAsyncThunk('album/edit', async ({ albumSlug, images }: { albumSlug: string, images: File[] }, { getState }) => {
+  const state = getState() as RootState
+  if (state.auth.isAuthenticated) {
+    const filesForm = new FormData();
+    images.forEach((file) => {
+      filesForm.append("files", file);
+    })
+    return axios.post(`${API_BASE}apps/album/${albumSlug}/upload`, filesForm, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Authorization": `Bearer ${await fireauth.currentUser?.getIdToken()}`
+      }
+    })
+  }
+})
+
 export const createAlbumAsync = createAsyncThunk(
   'album/create', async ({ repoName, albumName, images }: { repoName: string, albumName: string, images: File[]/*{ [x: number]: AppImageBlob }*/ }, { getState }) => {
     const state = getState() as RootState
-    const { idToken, accessToken, ghuser } = state.auth.credential as AppCredential
-    if (state.auth.isAuthenticated && accessToken && ghuser) {
-      var base64Url = idToken?.split('.')[1]
-      var base64 = base64Url?.replace(/-/g, '+').replace(/_/g, '/')
-      /*var jsonPayload = decodeURIComponent(atob(base64 ? base64 : '').split('').map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      }).join(''))*/
-
+    //const { accessToken, ghuser } = state.auth.credential as AppCredential
+    if (state.auth.isAuthenticated) {
       return axios.post(`${API_BASE}apps/album`, {
         title: albumName,
         byInviteOnly: true
@@ -120,22 +130,12 @@ export const createAlbumAsync = createAsyncThunk(
         images.forEach((file) => {
           filesForm.append("files", file);
         })
-        return axios.post(`${API_BASE}apps/album/${response.data.slug}/upload`, filesForm
-        /*{
-          images: Object.values(images).map((image) => {
-            return {
-              name: image.name,
-              b64: image.b64,
-              index: image.index,
-              selected: image.selected
-            }
-          })
-        }*/, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              "Authorization": `Bearer ${await fireauth.currentUser?.getIdToken()}`
-            }
-          })
+        return axios.post(`${API_BASE}apps/album/${response.data.slug}/upload`, filesForm, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${await fireauth.currentUser?.getIdToken()}`
+          }
+        })
       })
     }
   }
@@ -144,6 +144,9 @@ export const createAlbumAsync = createAsyncThunk(
 export const fetchAlbumAsync = createAsyncThunk(
   'album/fetch', async ({ name, owner }: { name: string, owner: string }, { getState }) => {
     const state = getState() as RootState
+    if (state.auth.isAuthenticated) {
+      console.log(`Auth true`)
+    }
     //if (state.auth.isAuthenticated) {
     //const { accessToken } = state.auth.credential as AppCredential
     //console.log(`accessToken ${accessToken} name ${name} owner ${owner}`)

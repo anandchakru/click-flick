@@ -1,6 +1,6 @@
 import { RootState } from '../../app/store'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { AppCredential, fireauth } from '../auth/AuthSlice'
+import { fireauth } from '../auth/AuthSlice'
 import axios from 'axios'
 import { API_BASE } from '../../app/constants'
 
@@ -48,6 +48,9 @@ const initialState: GalleryState = {
 export const fetchGalleryAsync = createAsyncThunk(
   'gallery/fetch', async (nw: string, { getState }) => {
     const state = getState() as RootState
+    if (state.auth.isAuthenticated) {
+      console.log(`Auth true`)
+    }
     return axios.get(`${API_BASE}apps/album/hosted`, {
       headers: {
         "Content-Type": "application/json; charset=UTF-8",

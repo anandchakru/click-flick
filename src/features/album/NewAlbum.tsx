@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Backdrop, Box, Button, CircularProgress, TextField } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { AppImageBlob, createAlbumAsync, selectAlbum } from './AlbumSlice'
-import { compress } from './compress'
+import { createAlbumAsync, selectAlbum } from './AlbumSlice'
+//import { compress } from './compress'
 import PreviewPickedImgsForUpload from './PreviewPickedImgsForUpload'
 import { useNavigate } from 'react-router-dom'
 

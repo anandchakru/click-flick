@@ -11,7 +11,7 @@ function Gallery() {
   const galleryMeta = useAppSelector(selectGalleryMeta)
   useEffect(() => {
     dispatch(fetchGalleryAsync(''))
-  }, [])
+  }, [dispatch])
   return (
     <>
       <AppBar position='relative' color="default" sx={{ marginBottom: '24px' }}>

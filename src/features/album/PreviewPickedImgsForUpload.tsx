@@ -1,4 +1,4 @@
-import { Card, CardActionArea, CardContent, CardMedia, Grid, Typography } from "@mui/material"
+import { Card, CardActionArea, CardContent, Grid, Typography } from "@mui/material"
 import { AppImageBlob } from "./AlbumSlice"
 
 const PreviewPickedImgsForUpload = (props: any) => {

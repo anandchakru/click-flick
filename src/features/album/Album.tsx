@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { addImagesToAlbumAsync, AppImageBlob, fetchAlbumAsync, selectAlbumGhPageImages, selectAlbumStatus } from './AlbumSlice'
+import { addToAlbumAsync, AppImageBlob, fetchAlbumAsync, selectAlbumGhPageImages, selectAlbumStatus } from './AlbumSlice'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { Avatar, Box, Card, CardActionArea, CardContent, CardMedia, Backdrop, CircularProgress, Grid, IconButton, SxProps, Typography, AppBar, Toolbar } from '@mui/material'
+import { Box, Card, CardActionArea, CardContent, CardMedia, Backdrop, CircularProgress, Grid, IconButton, SxProps, Typography, AppBar, Toolbar, Button } from '@mui/material'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import Dialog from '@mui/material/Dialog'
 import { selectGhUser } from '../auth/AuthSlice'
-import ShareIcon from '@mui/icons-material/Share'
-import GitHubIcon from '@mui/icons-material/GitHub'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
-import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import GridViewIcon from '@mui/icons-material/GridView'
 import ViewCompactIcon from '@mui/icons-material/ViewCompact'
 import { compress } from './compress'
@@ -87,7 +84,10 @@ function Album() {
   const [compressing, setCompressing] = useState<boolean>(false)
   const [isMasonry, setMasonry] = useState<boolean>(true)
 
-  const navigate = useNavigate()
+  const [newImages, setNewImages] = useState<File[]>([])
+
+  //const navigate = useNavigate()
+
   useEffect(() => {
     if (albumId && ghUser) {
       dispatch(fetchAlbumAsync({ owner: owner ? owner : ghUser, name: albumId }))
@@ -110,28 +110,11 @@ function Album() {
           </IconButton> : <IconButton aria-label="Switch to Masonary View" color="inherit" onClick={() => setMasonry(true)}>
             <ViewCompactIcon />
           </IconButton>}
-          {images && albumId && Object.keys(images).length > 0 ?
-            <IconButton aria-label="View on Github" color="primary" onClick={async () => {
-              if (!compressing && status !== 'loading') {
-                const ownerOrFork = owner ? owner : ghUser
-                ownerOrFork && await dispatch(addImagesToAlbumAsync({
-                  repoName: albumId, images,
-                  albumName: albumGhPageImages?.album?.title || albumId,
-                  owner: ownerOrFork,
-                }))
-                setImages({})
-                alert((ghUser === owner) ? `Images waiting for ${owner} approval` : `Images added, it will take about a minute to see changes.`)
-                navigate('/gallery')
-              }
-            }}>
-              <CloudUploadIcon />
-            </IconButton>
-            : <IconButton aria-label="View on Github" color="primary">
-              <label htmlFor="raised-button-file">
-                <AddAPhotoIcon />
-              </label>
-            </IconButton>}
-
+          <IconButton aria-label="View on Github" color="primary">
+            <label htmlFor="raised-button-file">
+              <AddAPhotoIcon />
+            </label>
+          </IconButton>
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h5" component="div">
               {albumGhPageImages?.album?.title || albumId}
@@ -203,6 +186,7 @@ function Album() {
             const files = Array.from(elem.files)
             setCompressing(true)
             setImages(await compress(files))
+            setNewImages(files)
             setCompressing(false)
           }
         }} />
@@ -211,6 +195,10 @@ function Album() {
           {(compressing || status === 'loading') && <CircularProgress />}
         </Backdrop>
       </Box>
+      {albumId && newImages && newImages.length > 0 && <Button sx={{}} variant="contained" color="primary" onClick={async () => {
+        await dispatch(addToAlbumAsync({ albumSlug: albumId, images: newImages }))
+        setImages([])
+      }} disabled={!images || Object.keys(images).length === 0}>Upload</Button>}
       {albumGhPageImages?.photos?.length && <FullscreenImage
         currentImage={albumGhPageImages?.photos[currentImage]}
         prev={currentImage >= 0 ? currentImage - 1 : undefined}

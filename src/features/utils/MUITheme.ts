@@ -1,4 +1,4 @@
-import { blueGrey, brown, deepOrange, deepPurple, green, orange, pink, purple, teal } from '@mui/material/colors'
+import { pink, teal } from '@mui/material/colors'
 import { createTheme } from '@mui/material/styles'
 
 const defaultTheme = createTheme({
@@ -12,7 +12,7 @@ const defaultTheme = createTheme({
     },
   },
 })
-const { breakpoints, typography: { pxToRem } } = defaultTheme
+const { breakpoints } = defaultTheme
 
 const theme = {
   ...defaultTheme,
